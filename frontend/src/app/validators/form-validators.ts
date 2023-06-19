@@ -1,6 +1,5 @@
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
-import { Observable, map, of } from 'rxjs';
-import { inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
 import { UserService } from '../service/user/user.service';
 
 export class FormValidators {
