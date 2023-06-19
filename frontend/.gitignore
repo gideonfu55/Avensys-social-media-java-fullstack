@@ -40,6 +40,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-# Exclude application.properties
-backend/src/main/resources/application.properties
