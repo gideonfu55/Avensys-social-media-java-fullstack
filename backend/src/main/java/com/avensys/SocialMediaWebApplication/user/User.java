@@ -26,43 +26,51 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(name="first_name", nullable = false, length = 150)
+    @Column(name = "first_name", nullable = false, length = 150)
     private String firstName;
 
-    @Column(name="last_name", nullable = false, length = 150)
+    @Column(name = "last_name", nullable = false, length = 150)
     private String lastName;
 
     @Column(nullable = false, length = 6)
     private String gender;
 
-    @Column(name= "avatar_url")
+    @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Column(name= "avatar_public_id")
+    @Column(name = "avatar_public_id")
     private String avatarPublicId;
 
     @CreationTimestamp
-    @Column(name ="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name ="updated_at")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-    )
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Post> posts = new ArrayList<>();
 
-    public User() {}
+    public User() {
+    }
 
-    public User(int id, String email, String password, String firstName, String lastName, String gender, String avatarUrl, String avatarPublicId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(
+        int id,
+        String email, 
+        String password, 
+        String firstName, 
+        String lastName, 
+        String gender, 
+        String avatarUrl, 
+        String avatarPublicId, 
+        LocalDateTime createdAt, 
+        LocalDateTime updatedAt
+    ) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -191,7 +199,4 @@ public class User {
         return roles;
     }
 
-//    public List<Post> getPosts() {
-//        return posts;
-//    }
 }
