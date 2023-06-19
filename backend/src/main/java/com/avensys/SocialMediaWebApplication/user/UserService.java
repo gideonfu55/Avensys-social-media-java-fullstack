@@ -152,8 +152,8 @@ public class UserService {
     public List<UserResponseDTO> searchUser(String keyword) {
         List<User> users = userRepository.findByUserByFirstNameOrLastNameOrEmail(keyword);
         List<UserResponseDTO> userResponseDTOs = users.stream()
-                .map(user -> userToUserResponseDTO(user))
-                .collect(Collectors.toList());
+            .map(user -> userToUserResponseDTO(user))
+            .collect(Collectors.toList());
 //        users.stream().map(this::userToUserResponseDTO).toList();
         return userResponseDTOs;
     }
@@ -161,29 +161,29 @@ public class UserService {
 
     private UserResponseDTO userToUserResponseDTO(User user) {
         return new UserResponseDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getGender(),
-                user.getAvatarUrl(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
+            user.getId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getGender(),
+            user.getAvatarUrl(),
+            user.getCreatedAt(),
+            user.getUpdatedAt()
         );
     }
 
     private UserUpdateResponseDTO userToUserUpdateResponseDTO(User user, String token) {
         return new UserUpdateResponseDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getGender(),
-                user.getAvatarUrl(),
-                token,
-                user.getRolesList(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
+            user.getId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getGender(),
+            user.getAvatarUrl(),
+            token,
+            user.getRolesList(),
+            user.getCreatedAt(),
+            user.getUpdatedAt()
         );
     }
 
