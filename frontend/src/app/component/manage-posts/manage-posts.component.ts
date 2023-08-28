@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { Post } from 'src/app/common/post';
 import { PostService } from 'src/app/service/post/post.service';
@@ -72,8 +74,8 @@ export class ManagePostsComponent implements OnInit {
       this.postsList.splice(index, 1);
       this.toastr.success('Post deleted successfully!')
     }
-  };
-
+  }
+  
   closePostModal() {
     this.openPost = false;
     this.cancel.emit();

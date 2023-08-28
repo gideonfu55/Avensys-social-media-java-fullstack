@@ -60,9 +60,9 @@ public class UserService {
         User userUpdate = findUserById(id);
 
         // Check if user is admin or user to update belong to user before user is allowed update user profile
-//        if (!checkIsAdmin()){
-//            checkUserToUpdateBelongsToUser(userUpdate);
-//        }
+        //    if (!checkIsAdmin()){
+        //        checkUserToUpdateBelongsToUser(userUpdate);
+        //    }
 
         userUpdate.setPassword(passwordEncoder.encode(userUpdateRequest.password()));
         userUpdate.setEmail(userUpdateRequest.email());
