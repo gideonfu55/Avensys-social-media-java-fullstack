@@ -38,45 +38,22 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> {
-                    auth
-                            .requestMatchers("/api/signup").permitAll()
-                            .requestMatchers("/api/login").permitAll()
-                            .requestMatchers("/api/users/email").permitAll()
-                            .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                            .anyRequest().authenticated();
-                })
-//                .exceptionHandling( exception -> {
-//                    exception
-//                            .authenticationEntryPoint((request, response, authException) -> {
-//
-//                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                                response.setContentType("application/json");
-//
-//                                var exceptionResponse = new ExceptionResponse();
-//                                exceptionResponse.setMessage("Unauthorized: Access denied");
-//                                exceptionResponse.setHttpStatus(HttpStatus.UNAUTHORIZED);
-//                                exceptionResponse.setTimestamp(null);
-//                                exceptionResponse.setThrowable(null);
-//
-//                                ObjectMapper objectMapper = new ObjectMapper();
-//                                String jsonBody = objectMapper.writeValueAsString(exceptionResponse);
-//                                System.out.println(jsonBody);
-//
-//                                // Write the JSON response body to the response
-//                                PrintWriter writer = response.getWriter();
-//                                writer.print(jsonBody);
-//                                writer.flush();
-//                            });
-//                })
-                .sessionManagement(session ->
-                        session
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
-                .addFilterBefore(jwtAuthFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> {
+                auth
+                    .requestMatchers("/api/signup").permitAll()
+                    .requestMatchers("/api/login").permitAll()
+                    .requestMatchers("/api/users/email").permitAll()
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated();
+            })
+            .sessionManagement(session ->
+                session
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
+            .addFilterBefore(jwtAuthFilter,
+                UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -86,7 +63,7 @@ public class SecurityConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:4200");
+            registry.addMapping("/**").allowedOrigins("http://localhost:4200");
             }
         };
     }

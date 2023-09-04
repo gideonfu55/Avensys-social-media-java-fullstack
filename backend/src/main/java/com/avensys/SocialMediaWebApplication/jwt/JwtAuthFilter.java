@@ -47,9 +47,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             // validate the toke with the userdetails
             if ( jwtService.validateToken(token, userDetails)){
                 // Create a new usernamepassword token and set it in webAuth
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-                        null,
-                        userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities()
+                );
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 // Set token in the security context
