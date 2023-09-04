@@ -20,20 +20,25 @@ public class PostController {
         this.postService = postService;
     }
 
-
-    @GetMapping("posts")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<List<PostResponseDTO>> getAllPosts() {
-            List<PostResponseDTO> PostResponses = postService.findAllPosts();
-        return new ResponseEntity<>(PostResponses, HttpStatus.OK);
-    }
-
-
     @PostMapping("posts")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<PostResponseDTO> createPost(@ModelAttribute PostCreateRequestDTO postCreateRequest) {
         PostResponseDTO postCreateResponse = postService.createPost(postCreateRequest);
         return new ResponseEntity<>(postCreateResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("posts")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<List<PostResponseDTO>> getAllPosts() {
+        List<PostResponseDTO> PostResponses = postService.findAllPosts();
+        return new ResponseEntity<>(PostResponses, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("users/{userId}/posts")
+    public ResponseEntity<List<PostResponseDTO>> getAllPostsByUserId(@PathVariable long userId) {
+        List<PostResponseDTO> PostResponses = postService.getPostsByUserId(userId);
+        return new ResponseEntity<>(PostResponses, HttpStatus.OK);
     }
 
     @PatchMapping("posts/{postId}")
@@ -43,6 +48,11 @@ public class PostController {
         return new ResponseEntity<>(postUpdateResponse, HttpStatus.OK);
     }
 
+    @PatchMapping("admin/posts/{postId}")
+    public ResponseEntity<PostResponseDTO> adminUpdatePost(@PathVariable long postId, @ModelAttribute PostUpdateRequestDTO postUpdateRequest) {
+        PostResponseDTO postUpdateResponse = postService.updatePost(postId, postUpdateRequest);
+        return new ResponseEntity<>(postUpdateResponse, HttpStatus.OK);
+    }
 
     @DeleteMapping("posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -51,25 +61,11 @@ public class PostController {
         return new ResponseEntity<>(new CustomResponse("Post deleted successfully"), HttpStatus.OK);
     }
 
-
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping("users/{userId}/posts")
-    public ResponseEntity<List<PostResponseDTO>> getAllPostsByUserId(@PathVariable long userId) {
-        List<PostResponseDTO> PostResponses = postService.getPostsByUserId(userId);
-        return new ResponseEntity<>(PostResponses, HttpStatus.OK);
-    }
-
     // Admin Routes to manage posts
     @DeleteMapping("admin/posts/{postId}")
     public ResponseEntity<CustomResponse> adminDeletePost(@PathVariable long postId) {
         postService.deletePostById(postId);
         return new ResponseEntity<>(new CustomResponse("Post deleted successfully"), HttpStatus.OK);
-    }
-
-    @PatchMapping("admin/posts/{postId}")
-    public ResponseEntity<PostResponseDTO> adminUpdatePost(@PathVariable long postId, @ModelAttribute PostUpdateRequestDTO postUpdateRequest) {
-        PostResponseDTO postUpdateResponse = postService.updatePost(postId, postUpdateRequest);
-        return new ResponseEntity<>(postUpdateResponse, HttpStatus.OK);
     }
 
 }
