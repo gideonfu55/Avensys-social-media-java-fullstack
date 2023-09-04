@@ -23,7 +23,6 @@ public class PostService {
     private final UserRepository userRepository;
     private final CloudinaryHelper cloudinaryHelper;
 
-
     public PostService(PostRepository postRepository, UserRepository userRepository, CloudinaryHelper cloudinaryHelper) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
@@ -32,8 +31,8 @@ public class PostService {
 
     public List<PostResponseDTO> findAllPosts() {
         return postRepository.findAll().stream()
-                .map(post -> postToPostResponseDTO(post))
-                .collect(Collectors.toList());
+            .map(post -> postToPostResponseDTO(post))
+            .collect(Collectors.toList());
 
     }
 
@@ -49,9 +48,12 @@ public class PostService {
     public PostResponseDTO createPost(PostCreateRequestDTO postCreateRequest) {
         Principal principal = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> user = userRepository.findByEmail(principal.getName());
+
+        // Check if user is admin or post belong to user before user is allowed to create a post:
         if (!user.isPresent()) {
             throw new UsernameNotFoundException("User not found");
         }
+
         Post post = new Post();
         post.setTitle(postCreateRequest.title());
         post.setCaption(postCreateRequest.caption());
@@ -151,7 +153,6 @@ public class PostService {
             }
         }
         System.out.println("Deleting post.....");
-//        postRepository.delete(post);
         postRepository.deleteById(id);
         System.out.println("Post deleted.....");
     }
@@ -160,8 +161,8 @@ public class PostService {
         Optional<List<Post>> userPosts = postRepository.findAllByUserId(id);
         if (userPosts.isPresent()) {
             return userPosts.get().stream()
-                    .map(post -> postToPostResponseDTO(post))
-                    .collect(Collectors.toList());
+                .map(post -> postToPostResponseDTO(post))
+                .collect(Collectors.toList());
         } else {
             throw new ResourceNotFoundException("Posts for users not found");
         }
@@ -193,24 +194,24 @@ public class PostService {
 
     private PostUserInfoDTO userToPostUserInfoDTO(User user) {
         return new PostUserInfoDTO(
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getGender(),
-                user.getAvatarUrl()
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getGender(),
+            user.getAvatarUrl()
         );
     }
 
     private PostResponseDTO postToPostResponseDTO(Post post) {
         PostUserInfoDTO postUserInfo = userToPostUserInfoDTO(post.getUser());
         PostResponseDTO postResponse = new PostResponseDTO(
-                post.getId(),
-                post.getTitle(),
-                post.getCaption(),
-                post.getContentUrl(),
-                post.getCreatedAt(),
-                post.getUpdatedAt(),
-                postUserInfo
+            post.getId(),
+            post.getTitle(),
+            post.getCaption(),
+            post.getContentUrl(),
+            post.getCreatedAt(),
+            post.getUpdatedAt(),
+            postUserInfo
         );
         return postResponse;
     }
@@ -229,7 +230,7 @@ public class PostService {
 
     private boolean checkIsAdmin() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+            .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
     }
 
 
