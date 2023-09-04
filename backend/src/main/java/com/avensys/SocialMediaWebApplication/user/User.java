@@ -50,7 +50,11 @@ public class User {
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "users_roles",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -179,8 +183,8 @@ public class User {
 
     public List<String> getRolesList() {
         return roles.stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
+            .map(Role::getName)
+            .collect(Collectors.toList());
     }
 
     public void addPost(Post post) {

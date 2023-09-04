@@ -34,10 +34,14 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
+    // Service methods
+
+    // For Finding All Users:
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
+    // For Finding User By Id:
     public User findUserById(long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -47,6 +51,8 @@ public class UserService {
         }
     }
 
+    // Find UserResponseDTO by id -
+    // Used for differentiating between Create User and retrieving an already created User Object during Login:
     public UserResponseDTO findUserByIdDTO(long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -64,29 +70,7 @@ public class UserService {
         //        checkUserToUpdateBelongsToUser(userUpdate);
         //    }
 
-        userUpdate.setPassword(passwordEncoder.encode(userUpdateRequest.password()));
-        userUpdate.setEmail(userUpdateRequest.email());
-        userUpdate.setFirstName(userUpdateRequest.firstName());
-        userUpdate.setLastName(userUpdateRequest.lastName());
-        userUpdate.setGender(userUpdateRequest.gender());
-
-        if (userUpdateRequest.avatarFile() != null && !userUpdateRequest.avatarFile().isEmpty()) {
-            System.out.println("------------> 1");
-            if (userUpdate.getAvatarPublicId() != null && !userUpdate.getAvatarPublicId().isEmpty()) {
-                deleteFile(userUpdate);
-            }
-            Map uploadResult = addFile(userUpdateRequest);
-            userUpdate.setAvatarUrl(uploadResult.get("url").toString());
-            userUpdate.setAvatarPublicId(uploadResult.get("public_id").toString());
-            System.out.println(userUpdate.getAvatarUrl());
-        } else if (userUpdateRequest.avatarUrl() == null) {
-            System.out.println("------------> 2");
-            if (userUpdate.getAvatarPublicId() != null && !userUpdate.getAvatarPublicId().isEmpty()) {
-                deleteFile(userUpdate);
-            }
-            userUpdate.setAvatarUrl(null);
-            userUpdate.setAvatarPublicId(null);
-        }
+        updateUserDetails(userUpdateRequest, userUpdate);
 
         User updatedUser = userRepository.save(userUpdate);
         String token = jwtService.generateToken(updatedUser.getEmail());
@@ -102,6 +86,23 @@ public class UserService {
             throw new ResourceAccessDeniedException("Access denied to resource");
         }
 
+        updateUserDetails(userUpdateRequest, userUpdate);
+
+        // Update Roles
+        userUpdate.getRoles().clear();
+        Arrays.stream(userUpdateRequest.roles()).forEach(role -> {
+            System.out.println(role);
+            Role roleFound = roleRepository.findRolesByName(role);
+            userUpdate.addRole(roleFound);
+        });
+
+        User updatedUser = userRepository.save(userUpdate);
+        String token = jwtService.generateToken(updatedUser.getEmail());
+
+        return userToUserUpdateResponseDTO(userUpdate, token);
+    }
+
+    private void updateUserDetails(UserUpdateRequestDTO userUpdateRequest, User userUpdate) {
         userUpdate.setPassword(passwordEncoder.encode(userUpdateRequest.password()));
         userUpdate.setEmail(userUpdateRequest.email());
         userUpdate.setFirstName(userUpdateRequest.firstName());
@@ -125,19 +126,6 @@ public class UserService {
             userUpdate.setAvatarUrl(null);
             userUpdate.setAvatarPublicId(null);
         }
-
-        // Update Roles
-        userUpdate.getRoles().clear();
-        Arrays.stream(userUpdateRequest.roles()).forEach(role -> {
-            System.out.println(role);
-            Role roleFound = roleRepository.findRolesByName(role);
-            userUpdate.addRole(roleFound);
-        });
-
-        User updatedUser = userRepository.save(userUpdate);
-        String token = jwtService.generateToken(updatedUser.getEmail());
-
-        return userToUserUpdateResponseDTO(userUpdate, token);
     }
 
     public void deleteUserById(long id) {
