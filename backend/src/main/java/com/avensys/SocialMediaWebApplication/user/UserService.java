@@ -141,7 +141,7 @@ public class UserService {
     }
 
     // For searching User and returning list of UserResponseDTO objects according to keyword:
-    // Used in the search bar component for Manage Users page
+    // Used in the search (user) bar component in the Navbar
     public List<UserResponseDTO> searchUser(String keyword) {
         List<User> users = userRepository.findByUserByFirstNameOrLastNameOrEmail(keyword);
         List<UserResponseDTO> userResponseDTOs = users.stream()
