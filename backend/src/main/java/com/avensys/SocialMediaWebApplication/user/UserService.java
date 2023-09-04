@@ -41,7 +41,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // For Finding User By Id:
+    // For finding User by id:
     public User findUserById(long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -51,8 +51,8 @@ public class UserService {
         }
     }
 
-    // Find UserResponseDTO by id -
-    // Used for differentiating between Create User and retrieving an already created User Object during Login:
+    // Find UserResponseDTO by id:
+    // Used for differentiating between Create User and retrieving an already created User Object during Login
     public UserResponseDTO findUserByIdDTO(long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -62,13 +62,10 @@ public class UserService {
         }
     }
 
+    // For updating User details and retrieving updated UserResponseDTO
+    // Used when normal user is updating his/her profile
     public UserUpdateResponseDTO updateUserById(long id, UserUpdateRequestDTO userUpdateRequest) {
         User userUpdate = findUserById(id);
-
-        // Check if user is admin or user to update belong to user before user is allowed update user profile
-        //    if (!checkIsAdmin()){
-        //        checkUserToUpdateBelongsToUser(userUpdate);
-        //    }
 
         updateUserDetails(userUpdateRequest, userUpdate);
 
@@ -78,6 +75,8 @@ public class UserService {
         return userToUserUpdateResponseDTO(userUpdate, token);
     }
 
+    // For updating User details and Role, then retrieving updated UserResponseDTO:
+    // Used when Admin is updating User details
     public UserUpdateResponseDTO updateUserByIdWithRoles(long id, UserUpdateRequestDTO userUpdateRequest) {
         User userUpdate = findUserById(id);
 
@@ -102,6 +101,7 @@ public class UserService {
         return userToUserUpdateResponseDTO(userUpdate, token);
     }
 
+    // Extracted method for updating User details for updateUserById() and updateUserByIdWithRoles():
     private void updateUserDetails(UserUpdateRequestDTO userUpdateRequest, User userUpdate) {
         userUpdate.setPassword(passwordEncoder.encode(userUpdateRequest.password()));
         userUpdate.setEmail(userUpdateRequest.email());
@@ -128,15 +128,20 @@ public class UserService {
         }
     }
 
+    // For deleting User by id:
     public void deleteUserById(long id) {
         User user = findUserById(id);
         userRepository.delete(user);
     }
 
+    // For checking if User exists by email:
+    // Used for checking if email already exists during User registration and when updating User profile details
     public boolean existUserByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    // For searching User and returning list of UserResponseDTO objects according to keyword:
+    // Used in the search bar component for Manage Users page
     public List<UserResponseDTO> searchUser(String keyword) {
         List<User> users = userRepository.findByUserByFirstNameOrLastNameOrEmail(keyword);
         List<UserResponseDTO> userResponseDTOs = users.stream()
@@ -146,7 +151,7 @@ public class UserService {
         return userResponseDTOs;
     }
 
-
+    // For converting User to UserResponseDTO object:
     private UserResponseDTO userToUserResponseDTO(User user) {
         return new UserResponseDTO(
             user.getId(),
@@ -160,6 +165,7 @@ public class UserService {
         );
     }
 
+    // For retrieving UserUpdateResponseDTO object from User object and token:
     private UserUpdateResponseDTO userToUserUpdateResponseDTO(User user, String token) {
         return new UserUpdateResponseDTO(
             user.getId(),
@@ -175,6 +181,26 @@ public class UserService {
         );
     }
 
+    // For deleting file from Cloudinary:
+    private void deleteFile(User user) {
+        try {
+            Map deleteResult = cloudinaryHelper.delete(user.getAvatarPublicId(), user.getAvatarUrl());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // For adding file to Cloudinary:
+    private Map addFile(UserUpdateRequestDTO userUpdateRequest) {
+        try {
+            return cloudinaryHelper.upload(userUpdateRequest.avatarFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    // For validating data based on security requirements before updating user details:
     private void checkUserToUpdateBelongsToUser(User UserUpdateRequest) {
         Principal principal = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> user = userRepository.findByEmail(principal.getName());
@@ -185,23 +211,7 @@ public class UserService {
 
     private boolean checkIsAdmin() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
-    }
-
-    private void deleteFile(User user) {
-        try {
-            Map deleteResult = cloudinaryHelper.delete(user.getAvatarPublicId(), user.getAvatarUrl());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Map addFile(UserUpdateRequestDTO userUpdateRequest) {
-        try {
-            return cloudinaryHelper.upload(userUpdateRequest.avatarFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
     }
 
 }
