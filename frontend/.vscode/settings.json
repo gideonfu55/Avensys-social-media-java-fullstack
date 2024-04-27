@@ -1,0 +1,13 @@
+{
+  "cSpell.words": [
+    "Aysnc",
+    "kohhxxx",
+    "toastr",
+    "Toastr"
+  ],
+  "angular-schematics.schematicsDefaultOptions": {
+    "angular-*": {
+      "externalTemplate": true
+    }
+  }
+}
