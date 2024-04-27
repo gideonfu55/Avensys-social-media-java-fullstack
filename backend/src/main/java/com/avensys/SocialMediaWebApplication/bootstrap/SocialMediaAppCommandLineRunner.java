@@ -32,10 +32,10 @@ public class SocialMediaAppCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        seedDataTODb( 100, 1);
+        seedDataToDb( 100, 1);
     }
 
-    private void seedDataTODb(int noOfUser, int noOfPost) {
+    private void seedDataToDb(int noOfUser, int noOfPost) {
         Faker faker = new Faker();
         Random random = new Random();
         String genderArray[] = {"male", "female"};
