@@ -4,5 +4,10 @@
     "kohhxxx",
     "toastr",
     "Toastr"
-  ]
+  ],
+  "angular-schematics.schematicsDefaultOptions": {
+    "angular-*": {
+      "externalTemplate": true
+    }
+  }
 }
